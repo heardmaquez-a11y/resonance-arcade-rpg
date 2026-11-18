@@ -1,0 +1,11 @@
+{
+  "name": "RESONANCE: The Balance of Worlds",
+  "short_name": "RESONANCE",
+  "description": "A five-world 16-bit musical platform adventure.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#090817",
+  "theme_color": "#090817"
+}

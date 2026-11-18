@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const $=id=>document.getElementById(id), canvas=$('game'), ctx=canvas.getContext('2d');
+const $=id=>document.getElementById(id), canvas=$('game'), ctx=canvas.getContext('2d');\nconst guardianAtlas=new Image();guardianAtlas.src='./assets/guardian_atlas.png';
 const W=960,H=540, FLOOR=460, SAVE='resonance-save-v2';
 const worlds=[
  {name:'THE HOLLOW',sub:'The silence between stars',boss:'THE HOLLOW KING',kind:'king',colors:['#100d2a','#30204d','#5b3678'],ground:'#39304e',glow:'#b77bff',scale:[55,65.4,73.4,82.4,98,110],bpm:88,weak:'chord'},
@@ -27,14 +27,14 @@ function makeWorld(){const t=worlds[world];level={length:2350,platforms:[],cryst
  say(t.name+' — '+t.sub);$('bossbar').classList.add('hide');hud()}
 function begin(){audioStart();$('menu').classList.add('hide');$('pauseMenu').classList.add('hide');$('upgradeMenu').classList.add('hide');$('endMenu').classList.add('hide');$('gameover').classList.add('hide');mode='play';makeWorld()}
 function jump(){if(mode==='play'&&hero.ground){hero.vy=-13;hero.ground=false;tone(440,.08)}}
-function attack(type){if(mode!=='play')return;if(type==='dash'){if(hero.dash<=0){hero.dash=14;hero.vx=hero.face*(12+upgrades.speed);sfx('dash')}return}
+function attack(type){if(mode!=='play')return;if(type==='dash'){if(hero.dash<=0){hero.dash=14;hero.dashHit=false;hero.vx=hero.face*(12+upgrades.speed);sfx('dash')}return}
  if(type==='wave'){if(hero.attack>0)return;hero.attack=22;level.waves.push({x:hero.x+hero.face*30,y:hero.y+24,vx:hero.face*(10+upgrades.speed*.4),life:34,r:20+upgrades.range*6,kind:'wave'});amp=clamp(amp+12,0,100);sfx('wave')}
  if(type==='chord'&&amp>=50){amp-=50;level.waves.push({x:hero.x+hero.face*36,y:hero.y+24,vx:hero.face*13,life:42,r:55+upgrades.range*8,kind:'chord'});sfx('chord');say('HARMONY CHORD!')}
 }
 function activateCrystal(c){if(c.active)return;c.active=true;shards++;score+=250;amp=clamp(amp+18,0,100);sfx('pickup');say('RESONANCE NODE '+(level.crystals.filter(x=>x.active).length)+'/3');for(let i=0;i<24;i++)level.sparks.push({x:c.x,y:c.y,vx:rand(-3,3),vy:rand(-4,2),life:40,color:worlds[world].glow})}
 function spawnBoss(){if(level.boss||!level.gateOpen)return;const t=worlds[world];level.boss={x:level.length-260,y:275,w:155,h:185,hp:220+world*55,max:220+world*55,phase:1,timer:100,flash:0,dead:false,defeat:0,pattern:0,warning:0};$('bossbar').classList.remove('hide');say(t.boss+' AWAKENS')}
 function hurt(){if(hero.inv>0)return;hp--;hero.inv=90;hero.vx=-hero.face*7;hero.vy=-6;sfx('hurt');if(hp<=0){mode='gameover';$('gameover').classList.remove('hide');return}}
-function update(){frame++;const t=worlds[world];if(hero.inv>0)hero.inv--;if(hero.attack>0)hero.attack--;if(hero.dash>0)hero.dash--;hero.anim+=Math.abs(hero.vx)*.08+.04;
+function update(){frame++;const t=worlds[world];if(hero.inv>0)hero.inv--;if(hero.attack>0)hero.attack--;if(hero.dash>0)hero.dash--;else hero.dashHit=false;hero.anim+=Math.abs(hero.vx)*.08+.04;
  if(input.left){hero.vx-=.72;hero.face=-1}if(input.right){hero.vx+=.72;hero.face=1}hero.vx*=hero.ground?.78:.94;hero.vx=clamp(hero.vx,-5-upgrades.speed*.5,5+upgrades.speed*.5);hero.vy=Math.min(hero.vy+.58,13);
  const oldY=hero.y;hero.x+=hero.vx;hero.y+=hero.vy;hero.ground=false;if(hero.y+hero.h>=FLOOR){hero.y=FLOOR-hero.h;hero.vy=0;hero.ground=true}
  for(const p of level.platforms)if(hero.x+hero.w>p.x&&hero.x<p.x+p.w&&oldY+hero.h<=p.y+8&&hero.y+hero.h>=p.y&&hero.vy>=0){hero.y=p.y-hero.h;hero.vy=0;hero.ground=true}
@@ -42,7 +42,7 @@ function update(){frame++;const t=worlds[world];if(hero.inv>0)hero.inv--;if(hero
  for(const c of level.crystals)if(!c.active&&Math.abs(hero.x+16-c.x)<48&&Math.abs(hero.y+25-c.y)<52&&level.waves.some(w=>Math.abs(w.x-c.x)<60&&Math.abs(w.y-c.y)<70))activateCrystal(c);
  for(const s of level.switches)if(!s.active&&level.waves.some(w=>Math.abs(w.x-s.x)<55&&Math.abs(w.y-s.y)<85)){s.active=true;score+=100;level.gateOpen=level.switches.every(x=>x.active)&&level.crystals.every(x=>x.active);say(level.gateOpen?'THE SEAL IS OPEN — FACE THE GUARDIAN':'ANCIENT SWITCH ACTIVATED')}
  if(level.crystals.every(c=>c.active)&&level.switches.every(s=>s.active))level.gateOpen=true;
- for(const w of level.waves){w.x+=w.vx;w.life--;if(!w.hit){for(const c of level.crystals)if(!c.active&&Math.abs(w.x-c.x)<45&&Math.abs(w.y-c.y)<60){activateCrystal(c);w.hit=true}for(const s of level.switches)if(!s.active&&Math.abs(w.x-s.x)<45&&Math.abs(w.y-s.y)<70){s.active=true;score+=100;w.hit=true;sfx('pickup');if(level.switches.every(x=>x.active)&&level.crystals.every(x=>x.active)){level.gateOpen=true;say('THE SEAL IS OPEN')}}}
+ const b=level.boss;for(const w of level.waves){w.x+=w.vx;w.life--;if(!w.hit){for(const c of level.crystals)if(!c.active&&Math.abs(w.x-c.x)<45&&Math.abs(w.y-c.y)<60){activateCrystal(c);w.hit=true}for(const s of level.switches)if(!s.active&&Math.abs(w.x-s.x)<45&&Math.abs(w.y-s.y)<70){s.active=true;score+=100;w.hit=true;sfx('pickup');if(level.switches.every(x=>x.active)&&level.crystals.every(x=>x.active)){level.gateOpen=true;say('THE SEAL IS OPEN')}}}
  const b=level.boss;if(b&&!b.dead&&Math.abs(w.x-(b.x+65))<w.r+85&&Math.abs(w.y-(b.y+85))<w.r+100){let dmg=w.kind==='chord'?54+upgrades.power*12:22+upgrades.power*7;const weakness=t.weak==='both'||t.weak===w.kind; if(weakness)dmg*=1.55;b.hp-=dmg;b.flash=10;w.life=0;score+=Math.round(dmg);sfx('hit');if(b.hp<=b.max*.5&&b.phase===1){b.phase=2;b.timer=45;say('GUARDIAN — PHASE TWO!')}}}
  level.waves=level.waves.filter(w=>w.life>0);
  if(level.gateOpen&&hero.x>level.length-560&&!level.boss)spawnBoss();
@@ -50,7 +50,7 @@ function update(){frame++;const t=worlds[world];if(hero.inv>0)hero.inv--;if(hero
  for(const p of level.shots){p.x+=p.vx;p.y+=p.vy;p.life--;if(Math.abs(hero.x+16-p.x)<p.r+18&&Math.abs(hero.y+25-p.y)<p.r+28){hurt();p.life=0}}
  level.shots=level.shots.filter(p=>p.life>0);
  if(b&&b.hp<=0&&!b.dead){b.dead=true;b.defeat=0;sfx('win');say('GUARDIAN DEFEATED — HARMONY RESTORED')}
- if(b&&b.dead){b.defeat++;if(b.defeat>95){score+=1000;shards+=5;world++;if(world>=5){mode='victory';saveGame();$('victory').classList.remove('hide');return}saveGame();mode='upgrade';showUpgrades();return}}
+ if(b&&b.dead){b.defeat++;if(b.defeat>95){score+=1000;shards+=5;world++;if(world>=5){world=4;mode='victory';try{localStorage.removeItem(SAVE)}catch(e){}$('victory').classList.remove('hide');return}saveGame();mode='upgrade';showUpgrades();return}}
  for(const s of level.sparks){s.x+=s.vx;s.y+=s.vy;s.vy+=.12;s.life--}level.sparks=level.sparks.filter(s=>s.life>0);
  camera=clamp(hero.x-340,0,level.length-W);if(toastTime>0){toastTime--;if(!toastTime)$('toast').classList.add('hide')}
  hud()
@@ -69,15 +69,7 @@ function drawHero(){const x=hero.x-camera,y=hero.y,bob=hero.ground?Math.sin(hero
  // bass body, neck, strings
  pixel(x+15,y+26+bob,30,7,'#218d49');pixel(x+37,y+15+bob,6,26,'#b4d76e');pixel(x+44,y+11+bob,4,31,'#d6bd81');for(let i=0;i<4;i++)pixel(x+41+i,y+14+bob,1,24,'#f4e8b0');pixel(x+18,y+27+bob,8,4,'#edc45a');pixel(x+25,y+29+bob,4,2,'#111');
  ctx.restore()}
-function drawBoss(b){const t=worlds[world],x=b.x-camera,y=b.y,kind=t.kind,c=t.glow;const aura=ctx.createRadialGradient(x+70,y+85,8,x+70,y+85,185);aura.addColorStop(0,c+'88');aura.addColorStop(1,'transparent');ctx.fillStyle=aura;ctx.fillRect(x-90,y-90,340,360);ctx.save();if(b.flash)ctx.globalAlpha=.45;
- const body={king:'#29163e',tree:'#31502d',mech:'#203b63',wraith:'#211132',angel:'#6b3d55'}[kind];pixel(x+25,y+42,105,115,body);pixel(x+13,y+22,130,47,body);pixel(x+45,y+74,17,9,'#fff1a4');pixel(x+96,y+74,17,9,'#fff1a4');pixel(x+45,y+157,25,35,body);pixel(x+100,y+157,25,35,body);
- if(kind==='king'){for(let i=0;i<5;i++){pixel(x+28+i*19,y+8-Math.sin(frame*.1+i)*4,8,28,'#d3a3ff');pixel(x+33+i*19,y+2,4,8,'#ffe078')}}
- if(kind==='tree'){for(let i=0;i<8;i++){ctx.strokeStyle=i%2?'#8cff63':'#a77b42';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(x+72,y+83);ctx.lineTo(x+72+Math.cos(i*.8+frame*.01)*110,y+20+Math.sin(i*.8+frame*.01)*110);ctx.stroke()}}
- if(kind==='mech'){for(let i=0;i<4;i++){pixel(x-8+i*42,y-9,25,25,'#f4a83a');pixel(x-2+i*42,y-3,13,13,'#45dfff')}pixel(x+55,y+105,38,20,'#ff8b34')}
- if(kind==='wraith'){for(let i=0;i<4;i++){ctx.strokeStyle='#bd79ff';ctx.lineWidth=7;ctx.beginPath();ctx.arc(x+75,y+95,70+i*13,frame*.018+i,frame*.018+i+2.3);ctx.stroke()}}
- if(kind==='angel'){ctx.fillStyle='#ffe5a2';ctx.beginPath();ctx.moveTo(x+58,y+48);ctx.lineTo(x-52,y-24);ctx.lineTo(x+17,y+100);ctx.fill();ctx.beginPath();ctx.moveTo(x+98,y+48);ctx.lineTo(x+205,y-24);ctx.lineTo(x+140,y+100);ctx.fill()}
- ctx.restore();if(b.warning>0){ctx.strokeStyle='#ff647e';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x+78,y+85,110+Math.sin(frame*.5)*8,0,Math.PI*2);ctx.stroke()}}
-function draw(){drawBackground();for(const p of level.platforms){const x=p.x-camera;if(x>-160&&x<W+100){pixel(x,p.y,p.w,p.h,'#75617f');pixel(x,p.y,p.w,5,worlds[world]?.glow||'#ffe08a');for(let a=0;a<p.w;a+=22)pixel(x+a,p.y+8,15,5,'#29233e')}}
+function drawBoss(b){const t=worlds[world]||worlds[4],x=b.x-camera,y=b.y,c=t.glow;const aura=ctx.createRadialGradient(x+75,y+80,8,x+75,y+80,190);aura.addColorStop(0,c+'88');aura.addColorStop(1,'transparent');ctx.fillStyle=aura;ctx.fillRect(x-70,y-70,300,300);const pose=b.dead?3:(b.flash>0?2:(b.warning>0?1:0));if(guardianAtlas.complete&&guardianAtlas.naturalWidth){ctx.imageSmoothingEnabled=false;ctx.drawImage(guardianAtlas,pose*48,world*25,48,25,x-18,y+30,192,100)}else{pixel(x+25,y+42,105,115,'#292044');pixel(x+13,y+22,130,47,'#292044');pixel(x+45,y+74,17,9,'#fff1a4');pixel(x+96,y+74,17,9,'#fff1a4')}if(b.warning>0&&!b.dead){ctx.strokeStyle='#ff647e';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x+78,y+85,110+Math.sin(frame*.5)*8,0,Math.PI*2);ctx.stroke()}}\nfunction draw(){drawBackground();for(const p of level.platforms){const x=p.x-camera;if(x>-160&&x<W+100){pixel(x,p.y,p.w,p.h,'#75617f');pixel(x,p.y,p.w,5,worlds[world]?.glow||'#ffe08a');for(let a=0;a<p.w;a+=22)pixel(x+a,p.y+8,15,5,'#29233e')}}
  for(const c of level.crystals){const x=c.x-camera;if(x>-30&&x<W+30){ctx.save();ctx.translate(x,c.y);ctx.rotate(Math.PI/4);pixel(-10,-10,20,20,c.active?'#fff3a0':worlds[world].glow);pixel(-5,-5,10,10,c.active?'#fff':'#543b80');ctx.restore();if(c.active){ctx.strokeStyle=worlds[world].glow;ctx.globalAlpha=.5;ctx.beginPath();ctx.arc(x,c.y,25+Math.sin(frame*.08)*4,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1}}}
  for(const s of level.switches){const x=s.x-camera;pixel(x-12,420,24,35,s.active?worlds[world].glow:'#51486b');pixel(x-6,426,12,12,s.active?'#fff':'#17152b')}
  if(!level.gateOpen){const gx=level.length-460-camera;pixel(gx,250,12,210,'#bd5a87');pixel(gx-8,250,28,8,'#ffd46a');for(let y=270;y<450;y+=25)pixel(gx-8,y,28,4,'#ff8baf')}

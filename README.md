@@ -35,3 +35,14 @@ A mobile-first 16-bit musical action-platform adventure. Play as the hooded bass
 
 ## Deployment
 Render Static Site, served from the `main` branch. No backend secrets or database are required.
+
+
+## Visual polish and QA pass
+- Hooded hero now has animated idle breathing, running leg/cloth motion, airborne posture, landing dust, strum pose, mirrored facing, dash afterimages, and hit flicker.
+- Roaming demons have animated bobbing, limb motion, horn/eye detail, damage flash and readable health bars.
+- Guardian presentation has a pulsing world-colored aura and warning ring layered over the four-pose guardian atlas.
+- Bass waves and harmony bursts use animated multi-ring waveforms; chord attacks add radial spark bursts.
+- Guardian projectiles have directional trails and pulsing impact rings; dash and damage create short-lived pixel particles.
+- Automated smoke test: game starts, canvas render loop runs, movement/attack/dash frames render, demon and final guardian poses render, and touchscreen pointer controls bind in a simulated DOM.
+- Gameplay simulation: note puzzle sequences, stage transitions, guardian spawn, demon defeat, and final boss phase transitions have been checked in the engine.
+- Not yet verified: physical Android/iOS devices, real touch latency, device-specific FPS/thermals, browser audio policies, and install/offline behavior on actual handsets. Those require device/browser sessions.

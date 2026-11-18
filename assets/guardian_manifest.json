@@ -1,0 +1,48 @@
+{
+  "title": "RESONANCE — The Balance of Worlds",
+  "atlas": "assets/guardian_atlas.png",
+  "layout": {
+    "columns": 4,
+    "rows": 5,
+    "frameWidth": 48,
+    "frameHeight": 25,
+    "poses": [
+      "idle",
+      "attack",
+      "damage",
+      "defeat"
+    ]
+  },
+  "guardians": [
+    {
+      "world": 1,
+      "name": "The Hollow King",
+      "kind": "king",
+      "weakness": "chord"
+    },
+    {
+      "world": 2,
+      "name": "The Root Mother",
+      "kind": "tree",
+      "weakness": "wave"
+    },
+    {
+      "world": 3,
+      "name": "The Noise Engine",
+      "kind": "mech",
+      "weakness": "wave"
+    },
+    {
+      "world": 4,
+      "name": "The Eclipse",
+      "kind": "wraith",
+      "weakness": "dash"
+    },
+    {
+      "world": 5,
+      "name": "The Discordant One",
+      "kind": "angel",
+      "weakness": "chord"
+    }
+  ]
+}

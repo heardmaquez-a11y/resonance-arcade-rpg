@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#090817">
+<meta name="theme-color" content="#090817"><link rel="manifest" href="./manifest.webmanifest">
 <title>RESONANCE — The Balance of Worlds</title>
 <style>
 :root{color-scheme:dark;--bg:#090817;--panel:#11102a;--gold:#ffd15b;--cyan:#67eaff;--lime:#b7ff69;--muted:#b8b7d3}
@@ -22,5 +22,5 @@
  </main>
  <footer class="bottom"><div class="touch"><button class="pad" data-key="left">◀</button><button class="pad" data-key="right">▶</button></div><div class="legend">MOVE · JUMP · TUNE · STRIKE</div><div class="touch noteTouch" id="noteTouch"><button class="pad" data-key="note0">DO</button><button class="pad" data-key="note1">RE</button><button class="pad" data-key="note2">MI</button><button class="pad" data-key="note3">SOL</button></div><div class="touch"><button class="pad action" data-key="jump">JUMP</button><button class="pad action attack" data-key="wave">BASS<br>WAVE</button><button class="pad action" data-key="burst">HARMONY<br>BURST</button></div></footer>
 </div>
-<script src="./game.js" defer></script>
+<script src="./game.js" defer></script><script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}</script>
 </body></html>

@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: resonance-arcade-rpg
+    runtime: static
+    buildCommand: echo "RESONANCE static site ready"
+    staticPublishPath: .
+    autoDeployTrigger: commit

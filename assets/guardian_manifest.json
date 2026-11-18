@@ -42,7 +42,25 @@
       "world": 5,
       "name": "The Discordant One",
       "kind": "angel",
-      "weakness": "chord"
+      "weakness": "chord",
+      "finalBattlePhases": 3
     }
-  ]
+  ],
+  "campaign": {
+    "worlds": 5,
+    "actsPerWorld": 3,
+    "totalActs": 15,
+    "guardianBattles": 5,
+    "puzzle": {
+      "nodesPerAct": 3,
+      "sealsPerAct": 3,
+      "sequenceLength": 4,
+      "notes": [
+        "DO",
+        "RE",
+        "MI",
+        "SOL"
+      ]
+    }
+  }
 }
